@@ -1,16 +1,32 @@
-# synceat
+# 📅 Project Journal - Day 1
 
-A new Flutter project.
+**Date:** May 20, 2025  
+**Day:** Tuesday  
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✅ Tasks Completed
 
-A few resources to get you started if this is your first Flutter project:
+- ✅ Created a new **Flutter project** and pushed the initial codebase to **GitHub**.
+- ✅ Cloned the repository locally for development.
+- ✅ Designed UI layouts in **Figma**:
+  - 🎨 **Login Page**
+  - 🎨 **Get Started Page**
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🔧 Tools Used
+
+- **Flutter** (for app development)
+- **Git & GitHub** (for version control and collaboration)
+- **Figma** (for UI/UX design)
+
+---
+
+## ✍️ Notes
+
+- The UI design is in an early stage, but the layout foundation for user onboarding is now in place.
+- Planning to focus on integrating the designed pages into the Flutter app next.
+
+---
+

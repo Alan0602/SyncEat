@@ -1,32 +1,44 @@
-# 📅 Project Journal - Day 1
+# 🥗 Flutter Diet App
 
-**Date:** May 20, 2025  
-**Day:** Tuesday  
-
----
-
-## ✅ Tasks Completed
-
-- ✅ Created a new **Flutter project** and pushed the initial codebase to **GitHub**.
-- ✅ Cloned the repository locally for development.
-- ✅ Designed UI layouts in **Figma**:
-  - 🎨 **Login Page**
-  - 🎨 **Get Started Page**
+A modern, scalable **Flutter application** designed to help users track and manage their diet. Built using **Firebase** for backend services and **BLoC** for efficient state management, this app follows **Clean Architecture** principles for maintainability and scalability.
 
 ---
 
-## 🔧 Tools Used
+## 🚀 Features
 
-- **Flutter** (for app development)
-- **Git & GitHub** (for version control and collaboration)
-- **Figma** (for UI/UX design)
+- 🔐 Firebase Authentication
+- 🍽️ Meal & Diet Tracking
+- 📈 Daily Progress Overview
+- 🧠 BLoC for Scalable State Management
+- 🎨 Modern UI with Custom Widgets
+- 📱 Responsive Design (Mobile-first)
+
+---
+
+## 🛠️ Technologies Used
+
+| Tech          | Purpose                              |
+|---------------|--------------------------------------|
+| Flutter       | Cross-platform UI development        |
+| Firebase      | Backend (Firestore)                  |
+| BLoC          | State management                     |
+| Clean Arch    | Scalable project structure           |
+| Figma         | UI/UX Design                         |
 
 ---
 
-## ✍️ Notes
+## 📁 Project Structure
 
-- The UI design is in an early stage, but the layout foundation for user onboarding is now in place.
-- Planning to focus on integrating the designed pages into the Flutter app next.
+The app follows a **feature-first** structure with proper domain separation.  
+📘 See: [`Structure Documentation`](lib/Documentation/Structure/structure.md)
 
 ---
+
+## 📔 Development Journal
+
+Track the project’s daily progress and decisions made during development.  
+🗓️ See: [`Project Journal`](ib/Documentation/Journal/journal.md)
+
+---
+
 

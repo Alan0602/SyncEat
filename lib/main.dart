@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:synceat/presentation/widgets/splashscreen/splashscreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,6 +12,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      home: const SplashScreen(),
+      debugShowCheckedModeBanner: false,
       
     );
   }

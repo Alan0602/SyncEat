@@ -1,6 +1,6 @@
 // Sign Up Page
 import 'package:flutter/material.dart';
-import 'package:synceat/presentation/widgets/auth/login_Screen.dart';
+import 'package:synceat/presentation/widgets/auth/login_screen.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);

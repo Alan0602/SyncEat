@@ -1,7 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:synceat/presentation/widgets/auth/login_Screen.dart';
+import 'package:synceat/presentation/widgets/auth/login_screen.dart';
 import 'package:synceat/presentation/widgets/auth/signin_screen.dart';
+import 'package:synceat/core/constants/image_constant.dart';
 
 // Get Started Page
 class GetStartedPage extends StatelessWidget {
@@ -31,20 +34,19 @@ class GetStartedPage extends StatelessWidget {
                     children: [
                       // Logo
                       Container(
-                        width: 130,
-                        height: 130,
+                        width: 230, // Match the image size
+                        height: 230, // Match the image size
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        child: const Image(
-                          image: AssetImage(
-                            'lib\\core\\utils\\images\\synceatlogo.png',
-                          ),
+                        child: Image(
+                          height: 230,
+                          width: 230,
+                          image: AssetImage(ImageConstant.logo),
                           fit: BoxFit.contain,
                         ),
                       ),
-
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 30),
 
                       // App Name
                       Row(
@@ -55,6 +57,7 @@ class GetStartedPage extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 36,
                               fontWeight: FontWeight.bold,
+                              fontFamily: 'Lufga',
                               color: Colors.black87,
                               letterSpacing: 2,
                               shadows: [
@@ -70,6 +73,7 @@ class GetStartedPage extends StatelessWidget {
                             'Eat',
                             style: TextStyle(
                               fontSize: 36,
+                              fontFamily: 'Lufga',
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 20, 137, 23),
                               letterSpacing: 2,
@@ -95,6 +99,7 @@ class GetStartedPage extends StatelessWidget {
                           fontSize: 18,
                           color: Colors.black45.withOpacity(0.9),
                           fontWeight: FontWeight.w300,
+                          fontFamily: 'Lufga',
                         ),
                       ),
 
@@ -106,6 +111,8 @@ class GetStartedPage extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
+                          fontFamily: 'Lufga',
+
                           color: Colors.black26.withOpacity(0.8),
                           height: 1.5,
                         ),
@@ -144,7 +151,7 @@ class GetStartedPage extends StatelessWidget {
                             elevation: 8,
                             shadowColor: Colors.black26,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(36),
                             ),
                           ),
                           child: const Text(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:synceat/presentation/widgets/auth/getstarted_screen.dart';
+import 'package:synceat/core/constants/image_constant.dart';
+import 'package:synceat/presentation/getStarted/getstarted_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -104,9 +105,9 @@ class _SplashScreenState extends State<SplashScreen>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        child: const Image(
+                        child: Image(
                           image: AssetImage(
-                            'lib\\core\\utils\\images\\synceatlogo.png',
+                            ImageConstant.logo, // Replace with your logo path
                           ),
                           fit: BoxFit.contain,
                         ),

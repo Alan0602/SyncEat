@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:synceat/presentation/widgets/auth/signin_screen.dart';
 
 // Login Page
@@ -57,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                 
                 // Welcome text
                 const Text(
-                  'Welcome\nBack!',
+                  'Welcome Back!',
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.bold,

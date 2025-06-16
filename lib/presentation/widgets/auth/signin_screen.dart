@@ -1,6 +1,7 @@
 // Sign Up Page
 import 'package:flutter/material.dart';
 import 'package:synceat/presentation/widgets/auth/login_Screen.dart';
+import 'package:synceat/presentation/widgets/auth/user_onboarding_screen.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -306,9 +307,12 @@ class _SignUpPageState extends State<SignUpPage> {
                                     ? () {
                                       if (_formKey.currentState!.validate()) {
                                         // Handle sign up
-                                        Navigator.pushReplacementNamed(
+                                        Navigator.pushReplacement(
                                           context,
-                                          '/home',
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                UserOnboardingPage(),
+                                          ),
                                         );
                                       }
                                     }

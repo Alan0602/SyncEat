@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:synceat/presentation/getStarted/getstarted_screen.dart';
+import 'package:synceat/presentation/widgets/auth/getstarted_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

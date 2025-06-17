@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class UserOnboardingPage extends StatefulWidget {
   const UserOnboardingPage({Key? key}) : super(key: key);
@@ -11,7 +12,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final int _totalPages = 10;
+  final int _totalPages = 7; // Remains 7 as structure is unchanged
 
   // Animation controllers
   late AnimationController _progressAnimationController;
@@ -23,11 +24,8 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
   final Map<String, dynamic> _userData = {};
 
   // Controllers for text fields
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
 
   // Selection variables
   String? _selectedGender;
@@ -36,6 +34,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
   String? _selectedActivityLevel;
   List<String> _selectedAllergies = [];
   List<String> _selectedCuisines = [];
+  DateTime? _selectedDOB;
 
   @override
   void initState() {
@@ -49,21 +48,22 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
       vsync: this,
     );
 
-    _progressAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _progressAnimationController,
-      curve: Curves.easeInOut,
-    ));
+    _progressAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _progressAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(1.0, 0.0),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideAnimationController,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _slideAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
 
     _slideAnimationController.forward();
   }
@@ -73,11 +73,8 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     _pageController.dispose();
     _progressAnimationController.dispose();
     _slideAnimationController.dispose();
-    _nameController.dispose();
-    _ageController.dispose();
     _weightController.dispose();
     _heightController.dispose();
-    _locationController.dispose();
     super.dispose();
   }
 
@@ -111,11 +108,9 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
 
   void _completeOnboarding() {
     // Save user data
-    _userData['name'] = _nameController.text;
-    _userData['age'] = _ageController.text;
+    _userData['dob'] = _selectedDOB;
     _userData['weight'] = _weightController.text;
     _userData['height'] = _heightController.text;
-    _userData['location'] = _locationController.text;
     _userData['gender'] = _selectedGender;
     _userData['bloodGroup'] = _selectedBloodGroup;
     _userData['dietType'] = _selectedDietType;
@@ -130,27 +125,66 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
   bool _canProceed() {
     switch (_currentPage) {
       case 0:
-        return _nameController.text.isNotEmpty;
+        return _selectedDOB != null && _selectedGender != null;
       case 1:
-        return _ageController.text.isNotEmpty;
+        return _weightController.text.isNotEmpty &&
+            _heightController.text.isNotEmpty;
       case 2:
-        return _selectedGender != null;
-      case 3:
-        return _weightController.text.isNotEmpty && _heightController.text.isNotEmpty;
-      case 4:
         return _selectedBloodGroup != null;
-      case 5:
-        return _locationController.text.isNotEmpty;
-      case 6:
+      case 3:
         return _selectedDietType != null;
-      case 7:
+      case 4:
         return _selectedActivityLevel != null;
-      case 8:
+      case 5:
         return _selectedAllergies.isNotEmpty;
-      case 9:
+      case 6:
         return _selectedCuisines.isNotEmpty;
       default:
         return true;
+    }
+  }
+
+  // Calculate BMI based on height (cm) and weight (kg)
+  double? _calculateBMI() {
+    if (_weightController.text.isEmpty || _heightController.text.isEmpty) {
+      return null;
+    }
+    try {
+      double weight = double.parse(_weightController.text);
+      double height =
+          double.parse(_heightController.text) / 100; // Convert cm to m
+      if (height <= 0) return null;
+      return weight / pow(height, 2);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Determine BMI category and feedback
+  String _getBMIFeedback(double bmi) {
+    if (bmi < 18.5) {
+      return "You might benefit from gaining a bit of weight for better health.";
+    } else if (bmi >= 18.5 && bmi < 25.0) {
+      return "Great job! Your weight-to-height ratio is in a healthy range.";
+    } else if (bmi >= 25.0 && bmi < 30.0) {
+      return "You're doing well, but consider a balanced diet to maintain optimal health.";
+    } else {
+      return "Let's work together to achieve a healthier weight for you!";
+    }
+  }
+
+  // Show date picker for DOB
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDOB ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _selectedDOB) {
+      setState(() {
+        _selectedDOB = picked;
+      });
     }
   }
 
@@ -162,11 +196,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF4ECDC4),
-              Color(0xFF44A08D),
-              Color(0xFFFFFFFF),
-            ],
+            colors: [Color(0xFF4ECDC4), Color(0xFF44A08D), Color(0xFFFFFFFF)],
             stops: [0.0, 0.3, 1.0],
           ),
         ),
@@ -175,7 +205,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
             children: [
               // Header with progress
               _buildHeader(),
-              
+
               // Questions
               Expanded(
                 child: PageView(
@@ -187,12 +217,9 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
                     _updateProgress();
                   },
                   children: [
-                    _buildNameQuestion(),
-                    _buildAgeQuestion(),
-                    _buildGenderQuestion(),
+                    _buildPersonalInfoQuestion(), // Combined DOB and Gender
                     _buildPhysicalInfoQuestion(),
                     _buildBloodGroupQuestion(),
-                    _buildLocationQuestion(),
                     _buildDietTypeQuestion(),
                     _buildActivityLevelQuestion(),
                     _buildAllergiesQuestion(),
@@ -200,7 +227,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
                   ],
                 ),
               ),
-              
+
               // Navigation buttons
               _buildNavigationButtons(),
             ],
@@ -225,9 +252,9 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
                 )
               else
                 const SizedBox(width: 48),
-              Text(
+              const Text(
                 'Profile Setup',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -308,10 +335,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
             const SizedBox(height: 8),
             Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 24),
             child,
@@ -321,55 +345,50 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     );
   }
 
-  Widget _buildNameQuestion() {
+  Widget _buildPersonalInfoQuestion() {
     return _buildQuestionCard(
-      title: "What's your name?",
-      subtitle: "We'd love to know what to call you!",
-      child: TextField(
-        controller: _nameController,
-        decoration: InputDecoration(
-          hintText: "Enter your full name",
-          prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF4ECDC4)),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: const Color(0xFF4ECDC4).withOpacity(0.1),
-        ),
-        onChanged: (value) => setState(() {}),
-      ),
-    );
-  }
-
-  Widget _buildAgeQuestion() {
-    return _buildQuestionCard(
-      title: "How old are you?",
+      title: "Personal Information",
       subtitle: "This helps us personalize your nutrition needs",
-      child: TextField(
-        controller: _ageController,
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-          hintText: "Enter your age",
-          prefixIcon: const Icon(Icons.cake_outlined, color: Color(0xFF4ECDC4)),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: const Color(0xFF4ECDC4).withOpacity(0.1),
-        ),
-        onChanged: (value) => setState(() {}),
-      ),
-    );
-  }
-
-  Widget _buildGenderQuestion() {
-    return _buildQuestionCard(
-      title: "What's your gender?",
-      subtitle: "This helps us calculate your nutritional requirements",
       child: Column(
         children: [
+          GestureDetector(
+            onTap: () => _selectDate(context),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: const Color(0xFF4ECDC4).withOpacity(0.1),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.calendar_today, color: Color(0xFF4ECDC4)),
+                  const SizedBox(width: 16),
+                  Text(
+                    _selectedDOB == null
+                        ? "Select your Date of Birth"
+                        : "${_selectedDOB!.day}/${_selectedDOB!.month}/${_selectedDOB!.year}",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color:
+                          _selectedDOB == null
+                              ? Colors.grey.shade600
+                              : Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            "What's your gender?",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2C3E50),
+            ),
+          ),
+          const SizedBox(height: 12),
           _buildOptionButton("Male", _selectedGender == "Male", () {
             setState(() => _selectedGender = "Male");
           }),
@@ -387,6 +406,8 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
   }
 
   Widget _buildPhysicalInfoQuestion() {
+    double? bmi = _calculateBMI();
+    String feedback = bmi != null ? _getBMIFeedback(bmi) : "";
     return _buildQuestionCard(
       title: "Physical Information",
       subtitle: "Help us calculate your ideal nutrition plan",
@@ -397,7 +418,10 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               hintText: "Weight (kg)",
-              prefixIcon: const Icon(Icons.monitor_weight_outlined, color: Color(0xFF4ECDC4)),
+              prefixIcon: const Icon(
+                Icons.monitor_weight_outlined,
+                color: Color(0xFF4ECDC4),
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -423,6 +447,30 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
             ),
             onChanged: (value) => setState(() {}),
           ),
+          const SizedBox(height: 20),
+          if (bmi != null)
+            Column(
+              children: [
+                Text(
+                  'BMI: ${bmi.toStringAsFixed(1)}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4ECDC4),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  feedback,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF2C3E50),
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );
@@ -435,34 +483,16 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
       child: Wrap(
         spacing: 12,
         runSpacing: 12,
-        children: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
-            .map((bloodGroup) => _buildChipOption(
-                  bloodGroup,
-                  _selectedBloodGroup == bloodGroup,
-                  () => setState(() => _selectedBloodGroup = bloodGroup),
-                ))
-            .toList(),
-      ),
-    );
-  }
-
-  Widget _buildLocationQuestion() {
-    return _buildQuestionCard(
-      title: "Where are you located?",
-      subtitle: "We'll suggest local cuisines and restaurants",
-      child: TextField(
-        controller: _locationController,
-        decoration: InputDecoration(
-          hintText: "Enter your city/location",
-          prefixIcon: const Icon(Icons.location_on_outlined, color: Color(0xFF4ECDC4)),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: const Color(0xFF4ECDC4).withOpacity(0.1),
-        ),
-        onChanged: (value) => setState(() {}),
+        children:
+            ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+                .map(
+                  (bloodGroup) => _buildChipOption(
+                    bloodGroup,
+                    _selectedBloodGroup == bloodGroup,
+                    () => setState(() => _selectedBloodGroup = bloodGroup),
+                  ),
+                )
+                .toList(),
       ),
     );
   }
@@ -473,21 +503,33 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
       subtitle: "This helps us recommend suitable meals",
       child: Column(
         children: [
-          _buildOptionButton("Vegetarian", _selectedDietType == "Vegetarian", () {
-            setState(() => _selectedDietType = "Vegetarian");
-          }),
+          _buildOptionButton(
+            "Vegetarian",
+            _selectedDietType == "Vegetarian",
+            () {
+              setState(() => _selectedDietType = "Vegetarian");
+            },
+          ),
           const SizedBox(height: 12),
           _buildOptionButton("Vegan", _selectedDietType == "Vegan", () {
             setState(() => _selectedDietType = "Vegan");
           }),
           const SizedBox(height: 12),
-          _buildOptionButton("Non-Vegetarian", _selectedDietType == "Non-Vegetarian", () {
-            setState(() => _selectedDietType = "Non-Vegetarian");
-          }),
+          _buildOptionButton(
+            "Non-Vegetarian",
+            _selectedDietType == "Non-Vegetarian",
+            () {
+              setState(() => _selectedDietType = "Non-Vegetarian");
+            },
+          ),
           const SizedBox(height: 12),
-          _buildOptionButton("Pescatarian", _selectedDietType == "Pescatarian", () {
-            setState(() => _selectedDietType = "Pescatarian");
-          }),
+          _buildOptionButton(
+            "Pescatarian",
+            _selectedDietType == "Pescatarian",
+            () {
+              setState(() => _selectedDietType = "Pescatarian");
+            },
+          ),
         ],
       ),
     );
@@ -499,21 +541,37 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
       subtitle: "This affects your caloric needs",
       child: Column(
         children: [
-          _buildOptionButton("Sedentary (Little to no exercise)", _selectedActivityLevel == "Sedentary", () {
-            setState(() => _selectedActivityLevel = "Sedentary");
-          }),
+          _buildOptionButton(
+            "Sedentary (Little to no exercise)",
+            _selectedActivityLevel == "Sedentary",
+            () {
+              setState(() => _selectedActivityLevel = "Sedentary");
+            },
+          ),
           const SizedBox(height: 12),
-          _buildOptionButton("Lightly Active (1-3 days/week)", _selectedActivityLevel == "Lightly Active", () {
-            setState(() => _selectedActivityLevel = "Lightly Active");
-          }),
+          _buildOptionButton(
+            "Lightly Active (1-3 days/week)",
+            _selectedActivityLevel == "Lightly Active",
+            () {
+              setState(() => _selectedActivityLevel = "Lightly Active");
+            },
+          ),
           const SizedBox(height: 12),
-          _buildOptionButton("Moderately Active (3-5 days/week)", _selectedActivityLevel == "Moderately Active", () {
-            setState(() => _selectedActivityLevel = "Moderately Active");
-          }),
+          _buildOptionButton(
+            "Moderately Active (3-5 days/week)",
+            _selectedActivityLevel == "Moderately Active",
+            () {
+              setState(() => _selectedActivityLevel = "Moderately Active");
+            },
+          ),
           const SizedBox(height: 12),
-          _buildOptionButton("Very Active (6-7 days/week)", _selectedActivityLevel == "Very Active", () {
-            setState(() => _selectedActivityLevel = "Very Active");
-          }),
+          _buildOptionButton(
+            "Very Active (6-7 days/week)",
+            _selectedActivityLevel == "Very Active",
+            () {
+              setState(() => _selectedActivityLevel = "Very Active");
+            },
+          ),
         ],
       ),
     );
@@ -526,26 +584,38 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
-        children: ['Nuts', 'Dairy', 'Gluten', 'Shellfish', 'Eggs', 'Soy', 'Fish', 'None']
-            .map((allergy) => _buildChipOption(
-                  allergy,
-                  _selectedAllergies.contains(allergy),
-                  () {
-                    setState(() {
-                      if (allergy == 'None') {
-                        _selectedAllergies = ['None'];
-                      } else {
-                        _selectedAllergies.remove('None');
-                        if (_selectedAllergies.contains(allergy)) {
-                          _selectedAllergies.remove(allergy);
+        children:
+            [
+                  'Nuts',
+                  'Dairy',
+                  'Gluten',
+                  'Shellfish',
+                  'Eggs',
+                  'Soy',
+                  'Fish',
+                  'None',
+                ]
+                .map(
+                  (allergy) => _buildChipOption(
+                    allergy,
+                    _selectedAllergies.contains(allergy),
+                    () {
+                      setState(() {
+                        if (allergy == 'None') {
+                          _selectedAllergies = ['None'];
                         } else {
-                          _selectedAllergies.add(allergy);
+                          _selectedAllergies.remove('None');
+                          if (_selectedAllergies.contains(allergy)) {
+                            _selectedAllergies.remove(allergy);
+                          } else {
+                            _selectedAllergies.add(allergy);
+                          }
                         }
-                      }
-                    });
-                  },
-                ))
-            .toList(),
+                      });
+                    },
+                  ),
+                )
+                .toList(),
       ),
     );
   }
@@ -557,21 +627,33 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
-        children: ['Indian', 'Chinese', 'Italian', 'Mexican', 'Thai', 'Japanese', 'Mediterranean', 'American']
-            .map((cuisine) => _buildChipOption(
-                  cuisine,
-                  _selectedCuisines.contains(cuisine),
-                  () {
-                    setState(() {
-                      if (_selectedCuisines.contains(cuisine)) {
-                        _selectedCuisines.remove(cuisine);
-                      } else {
-                        _selectedCuisines.add(cuisine);
-                      }
-                    });
-                  },
-                ))
-            .toList(),
+        children:
+            [
+                  'Indian',
+                  'Chinese',
+                  'Italian',
+                  'Mexican',
+                  'Thai',
+                  'Japanese',
+                  'Mediterranean',
+                  'American',
+                ]
+                .map(
+                  (cuisine) => _buildChipOption(
+                    cuisine,
+                    _selectedCuisines.contains(cuisine),
+                    () {
+                      setState(() {
+                        if (_selectedCuisines.contains(cuisine)) {
+                          _selectedCuisines.remove(cuisine);
+                        } else {
+                          _selectedCuisines.add(cuisine);
+                        }
+                      });
+                    },
+                  ),
+                )
+                .toList(),
       ),
     );
   }
@@ -636,16 +718,26 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
               child: OutlinedButton(
                 onPressed: _previousPage,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: const BorderSide(color: Colors.white),
+                  foregroundColor: const Color(0xFF4ECDC4),
+                  side: const BorderSide(color: Color(0xFF4ECDC4), width: 2),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Previous',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.arrow_back, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Previous',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -654,18 +746,31 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
             child: ElevatedButton(
               onPressed: _canProceed() ? _nextPage : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: const Color(0xFF4ECDC4),
-                disabledBackgroundColor: Colors.white.withOpacity(0.5),
+                backgroundColor: const Color(0xFF4ECDC4),
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: const Color(
+                  0xFF4ECDC4,
+                ).withOpacity(0.5),
                 elevation: 8,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text(
-                _currentPage == _totalPages - 1 ? 'Complete' : 'Next',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _currentPage == _totalPages - 1 ? 'Complete' : 'Next',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (_currentPage != _totalPages - 1) const SizedBox(width: 8),
+                  if (_currentPage != _totalPages - 1)
+                    const Icon(Icons.arrow_forward, size: 20),
+                ],
               ),
             ),
           ),

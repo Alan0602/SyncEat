@@ -1,14 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:synceat/presentation/widgets/auth/login_screen.dart';
 import 'package:synceat/presentation/widgets/auth/signin_screen.dart';
 import 'package:synceat/core/constants/image_constant.dart';
 
 // Get Started Page
 class GetStartedPage extends StatelessWidget {
-  const GetStartedPage({Key? key}) : super(key: key);
+  const GetStartedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +132,7 @@ class GetStartedPage extends StatelessWidget {
                         height: 56,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const SignUpPage(),
@@ -169,7 +168,7 @@ class GetStartedPage extends StatelessWidget {
                       // Already have account
                       TextButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const LoginPage(),

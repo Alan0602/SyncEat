@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "471307097463",
+    "project_id": "synceat-e90f8",
+    "storage_bucket": "synceat-e90f8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:471307097463:android:3d724fcb52e8643e64bd72",
+        "android_client_info": {
+          "package_name": "com.example.synceat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBccmZjOsVfNHJlfiT3erX18zoZGgFisaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:synceat/presentation/widgets/home/home_screen.dart';
+
 class UserOnboardingPage extends StatefulWidget {
-  const UserOnboardingPage({Key? key}) : super(key: key);
+  const UserOnboardingPage({super.key});
 
   @override
   State<UserOnboardingPage> createState() => _UserOnboardingPageState();
@@ -33,7 +35,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
   String? _selectedDietType;
   String? _selectedActivityLevel;
   List<String> _selectedAllergies = [];
-  List<String> _selectedCuisines = [];
+  final List<String> _selectedCuisines = [];
   DateTime? _selectedDOB;
 
   @override
@@ -119,7 +121,10 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     _userData['cuisines'] = _selectedCuisines;
 
     // Navigate to home
-    Navigator.pushReplacementNamed(context, '/home');
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
   }
 
   bool _canProceed() {

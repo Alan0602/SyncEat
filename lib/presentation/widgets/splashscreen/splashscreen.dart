@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:synceat/core/constants/image_constant.dart';
 import 'package:synceat/presentation/widgets/auth/getstarted_screen.dart';
+import 'package:synceat/presentation/widgets/auth/isuserlogined_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -59,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 3000));
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const GetStartedPage()),
+        MaterialPageRoute(builder: (context) => const IsuserloginedScreen()),
       );
     }
   }

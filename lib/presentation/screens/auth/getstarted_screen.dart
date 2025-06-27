@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:synceat/presentation/screens/auth/login_screen.dart';
 import 'package:synceat/presentation/screens/auth/signin_screen.dart';
 import 'package:synceat/core/constants/image_constant.dart';
+import 'package:synceat/core/constants/color_constants.dart';
 
 // Get Started Page
 class GetStartedPage extends StatelessWidget {
@@ -17,7 +18,11 @@ class GetStartedPage extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF44A08D), Color(0xFF4ECDC4), Color(0xFFFFFFFF)],
+            colors: [
+              ColorConstants.primaryColor,
+              ColorConstants.secondaryColor,
+              ColorConstants.backgroundColor,
+            ],
             stops: [0.0, 0.5, 1.0],
           ),
         ),
@@ -57,13 +62,13 @@ class GetStartedPage extends StatelessWidget {
                               fontSize: 36,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Lufga',
-                              color: Colors.black87,
+                              color: ColorConstants.textPrimary,
                               letterSpacing: 2,
                               shadows: [
                                 Shadow(
                                   offset: Offset(0, 2),
                                   blurRadius: 4,
-                                  color: Colors.black26,
+                                  color: ColorConstants.shadowColor,
                                 ),
                               ],
                             ),
@@ -74,13 +79,13 @@ class GetStartedPage extends StatelessWidget {
                               fontSize: 36,
                               fontFamily: 'Lufga',
                               fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 20, 137, 23),
+                              color: ColorConstants.primaryColor,
                               letterSpacing: 2,
                               shadows: [
                                 Shadow(
                                   offset: Offset(0, 2),
                                   blurRadius: 4,
-                                  color: Colors.black26,
+                                  color: ColorConstants.shadowColor,
                                 ),
                               ],
                             ),
@@ -96,7 +101,7 @@ class GetStartedPage extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18,
-                          color: Colors.black45.withOpacity(0.9),
+                          color: ColorConstants.textSecondary.withOpacity(0.9),
                           fontWeight: FontWeight.w300,
                           fontFamily: 'Lufga',
                         ),
@@ -111,8 +116,7 @@ class GetStartedPage extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Lufga',
-
-                          color: Colors.black26.withOpacity(0.8),
+                          color: ColorConstants.textSecondary.withOpacity(0.8),
                           height: 1.5,
                         ),
                       ),
@@ -140,15 +144,10 @@ class GetStartedPage extends StatelessWidget {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color.fromARGB(
-                              255,
-                              78,
-                              205,
-                              112,
-                            ),
+                            backgroundColor: ColorConstants.whiteColor,
+                            foregroundColor: ColorConstants.secondaryColor,
                             elevation: 8,
-                            shadowColor: Colors.black26,
+                            shadowColor: ColorConstants.shadowColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(36),
                             ),
@@ -178,7 +177,7 @@ class GetStartedPage extends StatelessWidget {
                         child: Text(
                           'Already have an account? Sign In',
                           style: TextStyle(
-                            color: Colors.black54.withOpacity(0.9),
+                            color: ColorConstants.textSecondary.withOpacity(0.9),
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),

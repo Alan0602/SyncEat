@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:synceat/presentation/controller/login_screen_controller.dart';
 import 'package:synceat/presentation/controller/signup_screen_controller.dart';
-import 'package:synceat/presentation/screens/bottom_navigation/bottom_navigation.dart';
 import 'package:synceat/presentation/screens/splashscreen/splashscreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:synceat/firebase_options.dart';

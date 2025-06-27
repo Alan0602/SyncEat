@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:synceat/presentation/screens/auth/getstarted_screen.dart';
-import 'package:synceat/presentation/screens/auth/login_screen.dart';
-import 'package:synceat/presentation/screens/home/home_screen.dart';
+import 'package:synceat/presentation/screens/bottom_navigation/bottom_navigation.dart';
 
 class IsuserloginedScreen extends StatefulWidget {
   const IsuserloginedScreen({super.key});
@@ -19,7 +18,7 @@ class _IsuserloginedScreenState extends State<IsuserloginedScreen> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HomeScreen();
+            return BottomNavigation();
           } else {
             return GetStartedPage();
           }

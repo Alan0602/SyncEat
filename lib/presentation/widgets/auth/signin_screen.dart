@@ -6,7 +6,6 @@ import 'package:synceat/presentation/controller/login_screen_controller.dart';
 import 'package:synceat/presentation/controller/signup_screen_controller.dart';
 import 'package:synceat/presentation/screens/auth/login_screen.dart';
 import 'package:synceat/presentation/screens/auth/user_onboarding_screen.dart';
-import 'package:synceat/presentation/screens/home/home_screen.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

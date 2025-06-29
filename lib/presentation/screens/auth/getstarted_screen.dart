@@ -79,7 +79,7 @@ class GetStartedPage extends StatelessWidget {
                               fontSize: 36,
                               fontFamily: 'Lufga',
                               fontWeight: FontWeight.bold,
-                              color: ColorConstants.primaryColor,
+                              color: ColorConstants.logoColor,
                               letterSpacing: 2,
                               shadows: [
                                 Shadow(
@@ -101,7 +101,7 @@ class GetStartedPage extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18,
-                          color: ColorConstants.textSecondary.withOpacity(0.9),
+                          color: ColorConstants.textPrimary,
                           fontWeight: FontWeight.w300,
                           fontFamily: 'Lufga',
                         ),
@@ -116,7 +116,7 @@ class GetStartedPage extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Lufga',
-                          color: ColorConstants.textSecondary.withOpacity(0.8),
+                          color: ColorConstants.textSecondary,
                           height: 1.5,
                         ),
                       ),
@@ -177,7 +177,9 @@ class GetStartedPage extends StatelessWidget {
                         child: Text(
                           'Already have an account? Sign In',
                           style: TextStyle(
-                            color: ColorConstants.textSecondary.withOpacity(0.9),
+                            color: ColorConstants.textSecondary.withOpacity(
+                              0.9,
+                            ),
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),

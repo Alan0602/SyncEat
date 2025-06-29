@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:synceat/core/constants/color_constants.dart';
+import 'package:synceat/presentation/controller/login_screen_controller.dart';
 import 'package:synceat/presentation/screens/auth/login_screen.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -10,6 +12,10 @@ class ProfilePage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final isTablet = screenWidth > 600;
+    final controller = Provider.of<LoginScreenController>(
+      context,
+      listen: false,
+    );
 
     return Scaffold(
       backgroundColor: ColorConstants.backgroundColor,
@@ -341,22 +347,19 @@ class ProfilePage extends StatelessWidget {
                               ),
                             ),
                             TextButton(
-                              onPressed: () {
-                                // Clear any stored user data/tokens here
-                                // SharedPreferences prefs = await SharedPreferences.getInstance();
-                                // await prefs.clear();
+                              // Clear any stored user data/tokens here
+                              // SharedPreferences prefs = await SharedPreferences.getInstance();
+                              // await prefs.clear();
 
-                                // Navigator.of(context).pushNamedAndRemoveUntil(
-                                //   '/login', // Replace with your login route
-                                //   (Route<dynamic> route) => false,
-                                // );
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginPage(),
-                                  ),
-                                );
+                              // Navigator.of(context).pushNamedAndRemoveUntil(
+                              //   '/login', // Replace with your login route
+                              //   (Route<dynamic> route) => false,
+                              // );
+                              onPressed: () async {
+                                Navigator.pop(context); // close dialog
+                                await controller.signOut(context);
                               },
+
                               child: Text(
                                 'Logout',
                                 style: TextStyle(

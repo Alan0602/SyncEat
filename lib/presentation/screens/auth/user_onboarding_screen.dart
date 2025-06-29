@@ -14,7 +14,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final int _totalPages = 7; // Remains 7 as structure is unchanged
+  final int _totalPages = 8; // Remains 9 as structure is unchanged
 
   // Animation controllers
   late AnimationController _progressAnimationController;
@@ -28,6 +28,10 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
   // Controllers for text fields
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _targetWeightController = TextEditingController();
+  final TextEditingController _timelineController = TextEditingController();
+  final TextEditingController _dislikedFoodsController =
+      TextEditingController();
 
   // Selection variables
   String? _selectedGender;
@@ -37,6 +41,11 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
   List<String> _selectedAllergies = [];
   final List<String> _selectedCuisines = [];
   DateTime? _selectedDOB;
+  String? _selectedGoal;
+  List<String> _selectedDietaryRestrictions = [];
+  int _mealsPerDay = 3;
+  List<String> _selectedMealTimings = [];
+  List<String> _mealTimes = List.filled(6, ""); // Initialize with empty strings
 
   @override
   void initState() {
@@ -77,6 +86,9 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     _slideAnimationController.dispose();
     _weightController.dispose();
     _heightController.dispose();
+    _targetWeightController.dispose();
+    _timelineController.dispose();
+    _dislikedFoodsController.dispose();
     super.dispose();
   }
 
@@ -114,11 +126,21 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     _userData['weight'] = _weightController.text;
     _userData['height'] = _heightController.text;
     _userData['gender'] = _selectedGender;
-    _userData['bloodGroup'] = _selectedBloodGroup;
     _userData['dietType'] = _selectedDietType;
     _userData['activityLevel'] = _selectedActivityLevel;
     _userData['allergies'] = _selectedAllergies;
     _userData['cuisines'] = _selectedCuisines;
+    _userData['goal'] = _selectedGoal;
+    _userData['targetWeight'] = _targetWeightController.text;
+    _userData['timeline'] = _timelineController.text;
+    _userData['dietaryRestrictions'] = _selectedDietaryRestrictions;
+    _userData['mealsPerDay'] = _mealsPerDay;
+    _userData['mealTimings'] =
+        _mealTimes
+            .sublist(0, _mealsPerDay)
+            .where((time) => time.isNotEmpty)
+            .toList();
+    _userData['dislikedFoods'] = _dislikedFoodsController.text;
 
     // Navigate to home
     Navigator.pushReplacement(
@@ -135,14 +157,29 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
         return _weightController.text.isNotEmpty &&
             _heightController.text.isNotEmpty;
       case 2:
-        return _selectedBloodGroup != null;
-      case 3:
         return _selectedDietType != null;
-      case 4:
+      case 3:
         return _selectedActivityLevel != null;
-      case 5:
+      case 4:
         return _selectedAllergies.isNotEmpty;
-      case 6:
+
+      case 5: // Adjust index based on where you place Fitness Goals
+        return _selectedGoal != null &&
+            _targetWeightController.text.isNotEmpty &&
+            _timelineController.text.isNotEmpty;
+      case 6: // Adjust index based on where you place Meal Preferences
+        bool timesSelected = true;
+        for (int i = 0; i < _mealsPerDay; i++) {
+          if (_mealTimes[i].isEmpty) {
+            timesSelected = false;
+            break;
+          }
+        }
+        return _selectedCuisines.isNotEmpty &&
+            _mealsPerDay > 0 &&
+            timesSelected;
+
+      case 7:
         return _selectedCuisines.isNotEmpty;
       default:
         return true;
@@ -224,10 +261,11 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
                   children: [
                     _buildPersonalInfoQuestion(), // Combined DOB and Gender
                     _buildPhysicalInfoQuestion(),
-                    _buildBloodGroupQuestion(),
                     _buildDietTypeQuestion(),
                     _buildActivityLevelQuestion(),
                     _buildAllergiesQuestion(),
+                    _buildFitnessGoalsQuestion(), // New Section 1
+                    _buildMealPreferencesQuestion(),
                     _buildCuisinePreferencesQuestion(),
                   ],
                 ),
@@ -326,25 +364,27 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2C3E50),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2C3E50),
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-            ),
-            const SizedBox(height: 24),
-            child,
-          ],
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              ),
+              const SizedBox(height: 24),
+              child,
+            ],
+          ),
         ),
       ),
     );
@@ -481,27 +521,6 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     );
   }
 
-  Widget _buildBloodGroupQuestion() {
-    return _buildQuestionCard(
-      title: "What's your blood group?",
-      subtitle: "Some diets are optimized based on blood type",
-      child: Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        children:
-            ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
-                .map(
-                  (bloodGroup) => _buildChipOption(
-                    bloodGroup,
-                    _selectedBloodGroup == bloodGroup,
-                    () => setState(() => _selectedBloodGroup = bloodGroup),
-                  ),
-                )
-                .toList(),
-      ),
-    );
-  }
-
   Widget _buildDietTypeQuestion() {
     return _buildQuestionCard(
       title: "What's your diet preference?",
@@ -621,6 +640,541 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
                   ),
                 )
                 .toList(),
+      ),
+    );
+  }
+
+  Widget _buildFitnessGoalsQuestion() {
+    return _buildQuestionCard(
+      title: "What's your goal?",
+      subtitle: "This helps us tailor your fitness and meal plans",
+      child: Column(
+        children: [
+          _buildGoalOption(
+            "Lose",
+            "Lose weight",
+            "Burn fat and get leaner",
+            Icons.accessibility_new,
+            _selectedGoal == "Lose",
+            () {
+              setState(() => _selectedGoal = "Lose");
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildGoalOption(
+            "Gain",
+            "Gain weight",
+            "Build muscle and increase mass",
+            Icons.fitness_center,
+            _selectedGoal == "Gain",
+            () {
+              setState(() => _selectedGoal = "Gain");
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildGoalOption(
+            "Maintain",
+            "Maintain weight",
+            "Stay fit and healthy",
+            Icons.self_improvement,
+            _selectedGoal == "Maintain",
+            () {
+              setState(() => _selectedGoal = "Maintain");
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildGoalOption(
+            "Build Muscle",
+            "Build Muscle",
+            "Increase strength and muscle mass",
+            Icons.emoji_people,
+            _selectedGoal == "Build Muscle",
+            () {
+              setState(() => _selectedGoal = "Build Muscle");
+            },
+          ),
+          const SizedBox(height: 24),
+          TextField(
+            controller: _targetWeightController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: "Target Weight (kg)",
+              prefixIcon: const Icon(Icons.flag, color: Color(0xFF4ECDC4)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: const Color(0xFF4ECDC4).withOpacity(0.1),
+            ),
+            onChanged: (value) => setState(() {}),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _timelineController,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              hintText: "Timeline (weeks/months)",
+              prefixIcon: const Icon(Icons.timer, color: Color(0xFF4ECDC4)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: const Color(0xFF4ECDC4).withOpacity(0.1),
+            ),
+            onChanged: (value) => setState(() {}),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            "Any dietary restrictions?",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2C3E50),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children:
+                ['Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Nut-Free']
+                    .map(
+                      (restriction) => _buildChipOption(
+                        restriction,
+                        _selectedDietaryRestrictions.contains(restriction),
+                        () {
+                          setState(() {
+                            if (_selectedDietaryRestrictions.contains(
+                              restriction,
+                            )) {
+                              _selectedDietaryRestrictions.remove(restriction);
+                            } else {
+                              _selectedDietaryRestrictions.add(restriction);
+                            }
+                          });
+                        },
+                      ),
+                    )
+                    .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMealPreferencesQuestion() {
+    return _buildQuestionCard(
+      title: "Meal Preferences",
+      subtitle: "Help us schedule your meals and preferences",
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Meals per day",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2C3E50),
+                ),
+              ),
+              Text(
+                "$_mealsPerDay",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF4ECDC4),
+                ),
+              ),
+            ],
+          ),
+          Slider(
+            value: _mealsPerDay.toDouble(),
+            min: 1,
+            max: 6,
+            divisions: 5,
+            activeColor: const Color(0xFF4ECDC4),
+            inactiveColor: Colors.grey.shade300,
+            onChanged: (value) {
+              setState(() {
+                _mealsPerDay = value.toInt();
+                // Reset times beyond the selected number of meals
+                for (int i = _mealsPerDay; i < _mealTimes.length; i++) {
+                  _mealTimes[i] = "";
+                }
+              });
+            },
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            "Meal Timings",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2C3E50),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Set a time for each of your $_mealsPerDay meal(s)",
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 16),
+          ...List.generate(_mealsPerDay, (index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: _buildMealTimeSelector(index),
+            );
+          }),
+          const SizedBox(height: 24),
+          const Text(
+            "Preferred Cuisines",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2C3E50),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children:
+                ['Italian', 'Mexican', 'Indian', 'Mediterranean', 'Asian']
+                    .map(
+                      (cuisine) => _buildChipOption(
+                        cuisine,
+                        _selectedCuisines.contains(cuisine),
+                        () {
+                          setState(() {
+                            if (_selectedCuisines.contains(cuisine)) {
+                              _selectedCuisines.remove(cuisine);
+                            } else {
+                              _selectedCuisines.add(cuisine);
+                            }
+                          });
+                        },
+                      ),
+                    )
+                    .toList(),
+          ),
+          const SizedBox(height: 24),
+          TextField(
+            controller: _dislikedFoodsController,
+            decoration: InputDecoration(
+              hintText: "Foods you dislike (comma separated)",
+              prefixIcon: const Icon(Icons.no_meals, color: Color(0xFF4ECDC4)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: const Color(0xFF4ECDC4).withOpacity(0.1),
+            ),
+            onChanged: (value) => setState(() {}),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMealTimeSelector(int mealIndex) {
+    String mealLabel = "Meal ${mealIndex + 1}";
+    String selectedTime =
+        _mealTimes[mealIndex].isEmpty ? "Select Time" : _mealTimes[mealIndex];
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFF4ECDC4).withOpacity(0.1),
+        border: Border.all(
+          color:
+              _mealTimes[mealIndex].isEmpty
+                  ? Colors.grey.shade300
+                  : const Color(0xFF4ECDC4),
+          width: 1.5,
+        ),
+      ),
+      child: InkWell(
+        onTap: () {
+          _showTimePickerDialog(mealIndex);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.access_time,
+                    color:
+                        _mealTimes[mealIndex].isEmpty
+                            ? Colors.grey.shade600
+                            : const Color(0xFF4ECDC4),
+                    size: 22,
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        mealLabel,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2C3E50),
+                        ),
+                      ),
+                      Text(
+                        selectedTime,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color:
+                              _mealTimes[mealIndex].isEmpty
+                                  ? Colors.grey.shade500
+                                  : const Color(0xFF4ECDC4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Icon(
+                Icons.arrow_drop_down,
+                color:
+                    _mealTimes[mealIndex].isEmpty
+                        ? Colors.grey.shade500
+                        : const Color(0xFF4ECDC4),
+                size: 24,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showTimePickerDialog(int mealIndex) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        int selectedHour = 7;
+        int selectedMinute = 0;
+        if (_mealTimes[mealIndex].isNotEmpty) {
+          try {
+            final parts = _mealTimes[mealIndex].split(':');
+            selectedHour = int.parse(parts[0]);
+            selectedMinute = int.parse(parts[1]);
+          } catch (e) {
+            // Default to 7:00 if parsing fails
+          }
+        }
+        return StatefulBuilder(
+          builder: (context, setBottomSheetState) {
+            return Container(
+              height: 300,
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Text(
+                    'Select Time for Meal ${mealIndex + 1}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2C3E50),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Hour Picker
+                        SizedBox(
+                          width: 100,
+                          child: ListWheelScrollView.useDelegate(
+                            itemExtent: 50,
+                            diameterRatio: 1.5,
+                            physics: const FixedExtentScrollPhysics(),
+                            overAndUnderCenterOpacity: 0.5,
+                            perspective: 0.002,
+                            onSelectedItemChanged: (index) {
+                              setBottomSheetState(() {
+                                selectedHour = 0 + index;
+                              });
+                            },
+                            childDelegate: ListWheelChildLoopingListDelegate(
+                              children: List.generate(24, (index) {
+                                return Center(
+                                  child: Text(
+                                    index.toString().padLeft(2, '0'),
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          selectedHour == index
+                                              ? const Color(0xFF4ECDC4)
+                                              : Colors.grey.shade400,
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ),
+                        ),
+                        const Text(
+                          ':',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF4ECDC4),
+                          ),
+                        ),
+                        // Minute Picker
+                        SizedBox(
+                          width: 100,
+                          child: ListWheelScrollView.useDelegate(
+                            itemExtent: 50,
+                            diameterRatio: 1.5,
+                            physics: const FixedExtentScrollPhysics(),
+                            overAndUnderCenterOpacity: 0.5,
+                            perspective: 0.002,
+                            onSelectedItemChanged: (index) {
+                              setBottomSheetState(() {
+                                selectedMinute = index * 15;
+                              });
+                            },
+                            childDelegate: ListWheelChildLoopingListDelegate(
+                              children: List.generate(4, (index) {
+                                final minute = index * 15;
+                                return Center(
+                                  child: Text(
+                                    minute.toString().padLeft(2, '0'),
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          selectedMinute == minute
+                                              ? const Color(0xFF4ECDC4)
+                                              : Colors.grey.shade400,
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Update the parent widget's state to reflect the selected time in the UI
+                      setState(() {
+                        _mealTimes[mealIndex] =
+                            '${selectedHour.toString().padLeft(2, '0')}:${selectedMinute.toString().padLeft(2, '0')}';
+                      });
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4ECDC4),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 14,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Confirm',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildGoalOption(
+    String title,
+    String subtitle,
+    String description,
+    IconData icon,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF4ECDC4) : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF4ECDC4) : Colors.grey.shade300,
+            width: 2,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : const Color(0xFF4ECDC4),
+              size: 30,
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? Colors.white : const Color(0xFF2C3E50),
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? Colors.white : Colors.grey.shade700,
+                  ),
+                ),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color:
+                        isSelected
+                            ? Colors.white.withOpacity(0.8)
+                            : Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

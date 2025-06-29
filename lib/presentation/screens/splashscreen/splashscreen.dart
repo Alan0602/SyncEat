@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:synceat/core/constants/image_constant.dart';
-import 'package:synceat/presentation/screens/auth/getstarted_screen.dart';
 import 'package:synceat/presentation/screens/auth/isuserlogined_screen.dart';
 
 class SplashScreen extends StatefulWidget {

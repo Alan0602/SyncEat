@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:synceat/core/constants/color_constants.dart';
-import 'package:synceat/presentation/controller/login_screen_controller.dart';
+import 'package:synceat/presentation/screens/profile/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-    @override
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final safeAreaTop = MediaQuery.of(context).padding.top;
-    
+
     return Scaffold(
       backgroundColor: ColorConstants.backgroundColor,
       body: SingleChildScrollView(
@@ -27,24 +27,33 @@ class HomeScreen extends StatelessWidget {
               // Header Section
               Row(
                 children: [
-                  Container(
-                    width: screenWidth * 0.12,
-                    height: screenWidth * 0.12,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          ColorConstants.primaryColor,
-                          ColorConstants.secondaryColor,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                  GestureDetector(
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfilePage(),
+                          ),
+                        ),
+                    child: Container(
+                      width: screenWidth * 0.12,
+                      height: screenWidth * 0.12,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            ColorConstants.primaryColor,
+                            ColorConstants.secondaryColor,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                       ),
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      color: ColorConstants.whiteColor,
-                      size: screenWidth * 0.06,
+                      child: Icon(
+                        Icons.person,
+                        color: ColorConstants.whiteColor,
+                        size: screenWidth * 0.06,
+                      ),
                     ),
                   ),
                   SizedBox(width: screenWidth * 0.03),
@@ -70,9 +79,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               SizedBox(height: screenHeight * 0.04),
-              
+
               // Day Streak Card
               Container(
                 width: double.infinity,
@@ -102,9 +111,9 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               SizedBox(height: screenHeight * 0.03),
-              
+
               // Calories Progress
               Container(
                 width: double.infinity,
@@ -170,9 +179,9 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               SizedBox(height: screenHeight * 0.03),
-              
+
               // Next Meal Card
               Container(
                 width: double.infinity,
@@ -248,9 +257,9 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               SizedBox(height: screenHeight * 0.04),
-              
+
               // Quick Stats Title
               Text(
                 'Quick Stats',
@@ -260,9 +269,9 @@ class HomeScreen extends StatelessWidget {
                   color: ColorConstants.textPrimary,
                 ),
               ),
-              
+
               SizedBox(height: screenHeight * 0.02),
-              
+
               // Stats Grid
               Row(
                 children: [
@@ -329,9 +338,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               SizedBox(height: screenWidth * 0.03),
-              
+
               Container(
                 width: screenWidth * 0.45,
                 padding: EdgeInsets.all(screenWidth * 0.04),
@@ -361,9 +370,9 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               SizedBox(height: screenHeight * 0.04),
-              
+
               // Today's Plan Title
               Text(
                 'Today\'s Plan',
@@ -373,17 +382,25 @@ class HomeScreen extends StatelessWidget {
                   color: ColorConstants.textPrimary,
                 ),
               ),
-              
+
               SizedBox(height: screenHeight * 0.02),
-              
+
               // Meal Plan List
               ...['Breakfast', 'Lunch', 'Dinner'].asMap().entries.map((entry) {
                 int index = entry.key;
                 String meal = entry.value;
                 List<String> calories = ['300 cal', '400 cal', '500 cal'];
-                List<IconData> icons = [Icons.breakfast_dining, Icons.lunch_dining, Icons.dinner_dining];
-                List<Color> iconColors = [Colors.orange, Colors.green, Colors.purple];
-                
+                List<IconData> icons = [
+                  Icons.breakfast_dining,
+                  Icons.lunch_dining,
+                  Icons.dinner_dining,
+                ];
+                List<Color> iconColors = [
+                  Colors.orange,
+                  Colors.green,
+                  Colors.purple,
+                ];
+
                 return Container(
                   margin: EdgeInsets.only(bottom: screenHeight * 0.015),
                   padding: EdgeInsets.all(screenWidth * 0.04),

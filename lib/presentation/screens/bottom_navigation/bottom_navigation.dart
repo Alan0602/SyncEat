@@ -7,7 +7,7 @@ import 'package:synceat/presentation/screens/settings/settings.dart';
 import 'package:synceat/presentation/widgets/bottombar/bottom_bar.dart';
 
 class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({Key? key}) : super(key: key);
+  const BottomNavigation({super.key});
 
   @override
   State<BottomNavigation> createState() => _BottomNavigationState();
@@ -17,23 +17,27 @@ class _BottomNavigationState extends State<BottomNavigation> {
   int _currentIndex = 0;
 
   final List<BottomNavItem> _navItems = [
-    BottomNavItem(icon: Icons.home, 
-    // label: 'Home'
+    BottomNavItem(
+      icon: Icons.home,
+      // label: 'Home'
     ),
-    BottomNavItem(icon: Icons.restaurant_menu, 
-    // label: 'Recipes'
+    BottomNavItem(
+      icon: Icons.restaurant_menu,
+      // label: 'Recipes'
     ),
-    BottomNavItem(icon: Icons.trending_up,
-    // label: 'Progress'
+    BottomNavItem(
+      icon: Icons.trending_up,
+      // label: 'Progress'
     ),
-    BottomNavItem(icon: Icons.settings, 
-    // label: 'Settings'
+    BottomNavItem(
+      icon: Icons.settings,
+      // label: 'Settings'
     ),
   ];
 
   final List<Widget> _pages = [
     const HomeScreen(),
-    const RecipesPage(),
+    const MealPlanPage(),
     const MealTracker(),
     const SettingsPage(),
   ];

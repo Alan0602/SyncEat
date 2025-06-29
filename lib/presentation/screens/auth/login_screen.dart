@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:synceat/core/constants/color_constants.dart';
 import 'package:synceat/presentation/controller/login_screen_controller.dart';
 import 'package:synceat/presentation/screens/auth/signin_screen.dart';
-import 'package:synceat/presentation/screens/home/home_screen.dart';
+import 'package:synceat/presentation/screens/bottom_navigation/bottom_navigation.dart';
 
 // Login Page
 class LoginPage extends StatefulWidget {
@@ -221,7 +221,8 @@ class _LoginPageState extends State<LoginPage> {
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => HomeScreen(),
+                                            builder:
+                                                (context) => BottomNavigation(),
                                           ),
                                         );
                                         _emailController.clear();
@@ -313,7 +314,8 @@ class _LoginPageState extends State<LoginPage> {
                                             context,
                                             MaterialPageRoute(
                                               builder:
-                                                  (context) => HomeScreen(),
+                                                  (context) =>
+                                                      BottomNavigation(),
                                             ),
                                             (route) => false,
                                           );

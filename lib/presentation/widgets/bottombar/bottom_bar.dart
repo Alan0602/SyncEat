@@ -105,7 +105,7 @@ class _AnimatedBottomNavigationBarState
     final isSelected = widget.currentIndex == index;
     final screenWidth = MediaQuery.of(context).size.width;
     final itemWidth =
-        (screenWidth - 32) / widget.items.length; // Responsive width
+        (screenWidth - 34) / widget.items.length; // Responsive width
 
     return GestureDetector(
       onTap: () => widget.onTap(index),

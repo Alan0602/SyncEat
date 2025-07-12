@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:synceat/presentation/widgets/auth/bloc/auth_service_bloc.dart';
+
 class UserOnboardingPage extends StatefulWidget {
   const UserOnboardingPage({Key? key}) : super(key: key);
 
@@ -78,7 +81,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     super.dispose();
   }
 
-  void _nextPage() {
+  void _nextPage(AuthServiceState state) {
     if (_currentPage < _totalPages - 1) {
       _currentPage++;
       _pageController.nextPage(
@@ -87,7 +90,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
       );
       _updateProgress();
     } else {
-      _completeOnboarding();
+      _completeOnboarding(state);
     }
   }
 
@@ -106,7 +109,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     _progressAnimationController.animateTo((_currentPage + 1) / _totalPages);
   }
 
-  void _completeOnboarding() {
+  void _completeOnboarding(AuthServiceState state) {
     // Save user data
     _userData['dob'] = _selectedDOB;
     _userData['weight'] = _weightController.text;
@@ -118,8 +121,17 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     _userData['allergies'] = _selectedAllergies;
     _userData['cuisines'] = _selectedCuisines;
 
-    // Navigate to home
-    Navigator.pushReplacementNamed(context, '/home');
+    context.read<AuthServiceBloc>().add(
+      GetUSerDetailsEvent(userdetails: _userData),
+    );
+    if (state is AuthServicesucces) {
+      // Navigate to home
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+    if (state is AuthServiceError) {
+      // Add snackbar
+      print('----------------${state.errormsg}');
+    }
   }
 
   bool _canProceed() {
@@ -190,50 +202,58 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF4ECDC4), Color(0xFF44A08D), Color(0xFFFFFFFF)],
-            stops: [0.0, 0.3, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header with progress
-              _buildHeader(),
-
-              // Questions
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                    _updateProgress();
-                  },
-                  children: [
-                    _buildPersonalInfoQuestion(), // Combined DOB and Gender
-                    _buildPhysicalInfoQuestion(),
-                    _buildBloodGroupQuestion(),
-                    _buildDietTypeQuestion(),
-                    _buildActivityLevelQuestion(),
-                    _buildAllergiesQuestion(),
-                    _buildCuisinePreferencesQuestion(),
-                  ],
-                ),
+    return BlocBuilder<AuthServiceBloc, AuthServiceState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF4ECDC4),
+                  Color(0xFF44A08D),
+                  Color(0xFFFFFFFF),
+                ],
+                stops: [0.0, 0.3, 1.0],
               ),
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  // Header with progress
+                  _buildHeader(),
 
-              // Navigation buttons
-              _buildNavigationButtons(),
-            ],
+                  // Questions
+                  Expanded(
+                    child: PageView(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPage = index;
+                        });
+                        _updateProgress();
+                      },
+                      children: [
+                        _buildPersonalInfoQuestion(), // Combined DOB and Gender
+                        _buildPhysicalInfoQuestion(),
+                        _buildBloodGroupQuestion(),
+                        _buildDietTypeQuestion(),
+                        _buildActivityLevelQuestion(),
+                        _buildAllergiesQuestion(),
+                        _buildCuisinePreferencesQuestion(),
+                      ],
+                    ),
+                  ),
+
+                  // Navigation buttons
+                  _buildNavigationButtons(state),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -708,7 +728,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     );
   }
 
-  Widget _buildNavigationButtons() {
+  Widget _buildNavigationButtons(AuthServiceState state) {
     return Container(
       padding: const EdgeInsets.all(24),
       child: Row(
@@ -744,7 +764,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
           if (_currentPage > 0) const SizedBox(width: 16),
           Expanded(
             child: ElevatedButton(
-              onPressed: _canProceed() ? _nextPage : null,
+              onPressed: _canProceed() ? () => _nextPage(state) : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF4ECDC4),
                 foregroundColor: Colors.white,

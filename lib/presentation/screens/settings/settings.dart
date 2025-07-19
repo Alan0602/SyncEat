@@ -3,7 +3,7 @@ import 'package:synceat/core/constants/color_constants.dart';
 import 'package:synceat/presentation/screens/Meal_history/meal_history_screen.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

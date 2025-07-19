@@ -17,11 +17,11 @@ class AnimatedBottomNavigationBar extends StatefulWidget {
   final List<BottomNavItem> items;
 
   const AnimatedBottomNavigationBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
     required this.items,
-  }) : super(key: key);
+  });
 
   @override
   State<AnimatedBottomNavigationBar> createState() =>

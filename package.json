@@ -1,0 +1,28 @@
+{
+  "name": "synceat",
+  "version": "1.0.0",
+  "description": "A modern, scalable **Flutter application** designed to help users track and manage their diet. Built using **Firebase** for backend services and **BLoC** for efficient state management, this app follows **Clean Architecture** principles for maintainability and scalability.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alan0602/SyncEat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Alan0602/SyncEat/issues"
+  },
+  "homepage": "https://github.com/Alan0602/SyncEat#readme",
+  "dependencies": {
+    "dotenv": "^17.2.0"
+  }
+}

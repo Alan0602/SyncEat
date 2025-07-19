@@ -5,7 +5,7 @@ import 'package:synceat/core/constants/color_constants.dart';
 
 class SignupScreenController with ChangeNotifier {
   bool islogined = false;
-  Future registerUser({
+  Future<UserCredential?> registerUser({
     required String password,
     required String email,
     required BuildContext context,
@@ -18,7 +18,7 @@ class SignupScreenController with ChangeNotifier {
       if (credential.user != null) {
         islogined = false;
         notifyListeners();
-        return true;
+        return credential;
       }
     } on FirebaseAuthException catch (e) {
       log(e.code);
@@ -45,7 +45,7 @@ class SignupScreenController with ChangeNotifier {
       }
     } catch (e) {
       print(e);
-      return false;
+      return null;
     }
     islogined = false;
     notifyListeners();

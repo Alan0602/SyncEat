@@ -1,4 +1,5 @@
 // Sign Up Page
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:synceat/core/constants/color_constants.dart';
@@ -327,44 +328,44 @@ class _SignUpPageState extends State<SignUpPage> {
                                             if (_formKey.currentState!
                                                 .validate()) {
                                               // Handle sign up
-                                              var success =
-                                                  await signupController
-                                                      .registerUser(
-                                                        password:
-                                                            _passwordController
-                                                                .text,
-                                                        email:
-                                                            _emailController
-                                                                .text,
-                                                        context: context,
-                                                      );
-                                              if (success) {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder:
-                                                        (context) =>
-                                                            UserOnboardingPage(),
-                                                  ),
-                                                );
-                                                _emailController.clear();
-                                                _passwordController.clear();
-                                                _confirmPasswordController
-                                                    .clear();
-                                              } else {
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      'Registration failed. Please try again.',
-                                                    ),
-                                                    backgroundColor:
-                                                        ColorConstants
-                                                            .primaryColor,
-                                                  ),
-                                                );
-                                              }
+                      var success =
+                          await signupController
+                              .registerUser(
+                                password:
+                                    _passwordController
+                                        .text,
+                                email:
+                                    _emailController
+                                        .text,
+                                context: context,
+                              );
+                      if (success != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserOnboardingPage(
+                              uid: success.user!.uid,
+                            ),
+                          ),
+                        );
+                        _emailController.clear();
+                        _passwordController.clear();
+                        _confirmPasswordController
+                            .clear();
+                      } else {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Registration failed. Please try again.',
+                            ),
+                            backgroundColor:
+                                ColorConstants
+                                    .primaryColor,
+                          ),
+                        );
+                      }
                                             }
                                           }
                                           : null,
@@ -443,7 +444,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                             MaterialPageRoute(
                                               builder:
                                                   (context) =>
-                                                      UserOnboardingPage(),
+                                                      UserOnboardingPage(uid: FirebaseAuth.instance.currentUser?.uid ?? '',),
                                             ),
                                             (route) => false,
                                           );

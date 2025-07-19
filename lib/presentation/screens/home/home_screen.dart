@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:synceat/core/constants/color_constants.dart';
+import 'package:synceat/presentation/screens/ai_chat/ai_chat_screen.dart';
 import 'package:synceat/presentation/screens/profile/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -13,6 +14,17 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: ColorConstants.backgroundColor,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AiChatScreen(),
+            ),
+          );
+        },
+        child: const Icon(Icons.chat),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.fromLTRB(
@@ -447,7 +459,7 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

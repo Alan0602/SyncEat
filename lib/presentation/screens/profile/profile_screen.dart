@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:synceat/core/constants/color_constants.dart';
 import 'package:synceat/presentation/controller/login_screen_controller.dart';
-import 'package:synceat/presentation/screens/auth/login_screen.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

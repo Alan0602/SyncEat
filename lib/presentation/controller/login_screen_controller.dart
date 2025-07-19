@@ -96,7 +96,7 @@ class LoginScreenController with ChangeNotifier {
         notifyListeners();
         return false;
       }
-      final GoogleSignInAuthentication? gauth = await guser.authentication;
+      final GoogleSignInAuthentication gauth = await guser.authentication;
 
       final credential = GoogleAuthProvider.credential(
         accessToken: gauth?.accessToken,
@@ -126,8 +126,8 @@ class LoginScreenController with ChangeNotifier {
   getCurrentUser() {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final User? user = auth.currentUser;
-    currentuseremail = user?.email ?? null;
-    currentuserphoto = user?.photoURL ?? null;
-    currentusername = user?.displayName ?? null;
+    currentuseremail = user?.email;
+    currentuserphoto = user?.photoURL;
+    currentusername = user?.displayName;
   }
 }

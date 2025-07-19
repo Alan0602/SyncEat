@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:synceat/core/constants/color_constants.dart';
 
 class MealTracker extends StatefulWidget {
-  const MealTracker({Key? key}) : super(key: key);
+  const MealTracker({super.key});
 
   @override
   State<MealTracker> createState() => _MealTrackerState();
@@ -147,7 +147,7 @@ class _MealTrackerState extends State<MealTracker> {
                   SizedBox(height: screenHeight * 0.03),
 
                   // Weight Chart
-                  Container(
+                  SizedBox(
                     height: screenHeight * 0.25,
                     width: double.infinity,
                     child: CustomPaint(painter: WeightChartPainter()),

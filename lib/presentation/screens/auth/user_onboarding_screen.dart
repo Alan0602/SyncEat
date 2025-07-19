@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:synceat/presentation/screens/home/home_screen.dart';
+import 'package:synceat/presentation/controller/bloc/auth_service_bloc.dart';
 
 class UserOnboardingPage extends StatefulWidget {
-  const UserOnboardingPage({super.key});
+  final String uid;
+  const UserOnboardingPage({super.key, required this.uid});
 
   @override
   State<UserOnboardingPage> createState() => _UserOnboardingPageState();
@@ -42,10 +46,13 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
   final List<String> _selectedCuisines = [];
   DateTime? _selectedDOB;
   String? _selectedGoal;
-  List<String> _selectedDietaryRestrictions = [];
+  final List<String> _selectedDietaryRestrictions = [];
   int _mealsPerDay = 3;
-  List<String> _selectedMealTimings = [];
-  List<String> _mealTimes = List.filled(6, ""); // Initialize with empty strings
+  final List<String> _selectedMealTimings = [];
+  final List<String> _mealTimes = List.filled(
+    6,
+    "",
+  ); // Initialize with empty strings
 
   @override
   void initState() {
@@ -92,7 +99,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     super.dispose();
   }
 
-  void _nextPage() {
+  void _nextPage(AuthServiceState state) {
     if (_currentPage < _totalPages - 1) {
       _currentPage++;
       _pageController.nextPage(
@@ -101,7 +108,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
       );
       _updateProgress();
     } else {
-      _completeOnboarding();
+      _completeOnboarding(state);
     }
   }
 
@@ -120,7 +127,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     _progressAnimationController.animateTo((_currentPage + 1) / _totalPages);
   }
 
-  void _completeOnboarding() {
+  void _completeOnboarding(AuthServiceState state) {
     // Save user data
     _userData['dob'] = _selectedDOB;
     _userData['weight'] = _weightController.text;
@@ -143,10 +150,21 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     _userData['dislikedFoods'] = _dislikedFoodsController.text;
 
     // Navigate to home
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    context.read<AuthServiceBloc>().add(
+      GetUserDetailsEvent(userdetails: _userData, uid: widget.uid),
     );
+    if (state is AuthServiceLoading) {
+      CircularProgressIndicator();
+    }
+    if (state is AuthServiceSuccess) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    }
+    if (state is AuthServiceError) {
+      print('---------${state.errormsg}');
+    }
   }
 
   bool _canProceed() {
@@ -232,51 +250,59 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF4ECDC4), Color(0xFF44A08D), Color(0xFFFFFFFF)],
-            stops: [0.0, 0.3, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header with progress
-              _buildHeader(),
-
-              // Questions
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                    _updateProgress();
-                  },
-                  children: [
-                    _buildPersonalInfoQuestion(), // Combined DOB and Gender
-                    _buildPhysicalInfoQuestion(),
-                    _buildDietTypeQuestion(),
-                    _buildActivityLevelQuestion(),
-                    _buildAllergiesQuestion(),
-                    _buildFitnessGoalsQuestion(), // New Section 1
-                    _buildMealPreferencesQuestion(),
-                    _buildCuisinePreferencesQuestion(),
-                  ],
-                ),
+    return BlocBuilder<AuthServiceBloc, AuthServiceState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF4ECDC4),
+                  Color(0xFF44A08D),
+                  Color(0xFFFFFFFF),
+                ],
+                stops: [0.0, 0.3, 1.0],
               ),
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  // Header with progress
+                  _buildHeader(),
 
-              // Navigation buttons
-              _buildNavigationButtons(),
-            ],
+                  // Questions
+                  Expanded(
+                    child: PageView(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPage = index;
+                        });
+                        _updateProgress();
+                      },
+                      children: [
+                        _buildPersonalInfoQuestion(), // Combined DOB and Gender
+                        _buildPhysicalInfoQuestion(),
+                        _buildDietTypeQuestion(),
+                        _buildActivityLevelQuestion(),
+                        _buildAllergiesQuestion(),
+                        _buildFitnessGoalsQuestion(), // New Section 1
+                        _buildMealPreferencesQuestion(),
+                        _buildCuisinePreferencesQuestion(),
+                      ],
+                    ),
+                  ),
+
+                  // Navigation buttons
+                  _buildNavigationButtons(state),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -1267,7 +1293,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
     );
   }
 
-  Widget _buildNavigationButtons() {
+  Widget _buildNavigationButtons(AuthServiceState state) {
     return Container(
       padding: const EdgeInsets.all(24),
       child: Row(
@@ -1303,7 +1329,7 @@ class _UserOnboardingPageState extends State<UserOnboardingPage>
           if (_currentPage > 0) const SizedBox(width: 16),
           Expanded(
             child: ElevatedButton(
-              onPressed: _canProceed() ? _nextPage : null,
+              onPressed: _canProceed() ? () => _nextPage(state) : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF4ECDC4),
                 foregroundColor: Colors.white,

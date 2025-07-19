@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:synceat/core/constants/color_constants.dart';
 
 class MealPlanPage extends StatefulWidget {
-  const MealPlanPage({Key? key}) : super(key: key);
+  const MealPlanPage({super.key});
 
   @override
   State<MealPlanPage> createState() => _MealPlanPageState();
